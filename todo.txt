@@ -1,0 +1,4 @@
+
+check privileges exception and catch it
+
+make decryptor
