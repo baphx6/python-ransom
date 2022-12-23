@@ -16,7 +16,6 @@ def main():
     # After getting the data close the connection
     s.close()
     
-    output_file = addr[0]+".key"
     with open(addr[0]+".key", "w") as f:
         separator_index = data.index("Key:") + 4
         f.write(data[separator_index:])
